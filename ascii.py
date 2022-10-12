@@ -1,12 +1,16 @@
 from math import *
 import os
 from PIL import Image
+import pyperclip
 
 colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (255, 255, 0), (0, 0, 255), (255, 0, 255), (0, 255, 255), (255, 255, 255)]
 light = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
 
 def maxOut(color):
 	o = []
+	if max(color) == 0:
+		return (0, 0, 0)
+
 	for i in color:
 		o.append(int((i / max(color)) * 255))
 
@@ -55,11 +59,12 @@ def full(im):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(col)
+				tb = evaluateColor(mult(col, 0.8))
 
 			o += f"\033[3{tb}m{getAscii(col)}\033[0m"
 		o += "\n"
 	print(o)
+	pyperclip.copy(o)
 
 def getSurround(im, pix, w, h, cl, x, y):
 	nn = 0
@@ -91,7 +96,7 @@ def getSurround(im, pix, w, h, cl, x, y):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(col)
+				tb = evaluateColor(mult(col, 0.8))
 
 			if cl == tb:
 				v += tv
@@ -119,6 +124,9 @@ def getSurround(im, pix, w, h, cl, x, y):
 	#else:
 	#	ch = str(v).ljust(3)
 
+	if cl == 0:
+		ch = " "
+
 	return ch, isit > 1
 
 def clean(im):
@@ -142,7 +150,7 @@ def clean(im):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(col)
+				tb = evaluateColor(mult(col, 0.8))
 
 			v, isit = getSurround(im, pix, w, h, tb, j, i)
 
@@ -171,12 +179,16 @@ def outline(im):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(col)
+				tb = evaluateColor(mult(col, 0.8))
 
 			ch, ist = getSurround(im, pix, w, h, tb, j, i)
 			o += f"\033[3{tb}m{ch}\033[0m"
 		o += "\n"
 	print(o)
+	pyperclip.copy(o)
+
+def mult(c, i):
+	return tuple([int(j * i) for j in c])
 
 os.system("color")
 
@@ -185,11 +197,41 @@ while 1:
 
 	im = Image.open(direct)
 	w, h = im.size
-	img = im.resize((w * 2, h), Image.NEAREST)
+	img = im#.resize((w * 2, h), Image.NEAREST)
 
 	typ = int(input("Mode: "))
-	if typ:
+	if typ == 1:
 		full(img)
+	elif typ == 2:
+		nim = im.copy()
+		npix = nim.load()
+
+		nnim = im.copy()
+		nnpix = nnim.load()
+
+		nnnim = im.copy()
+		nnnpix = nnnim.load()
+
+		pix = im.load()
+		w, h = im.size
+		for i in range(h):
+			for j in range(w):
+				try:
+					r, g, b, a = pix[j, i]
+				except:
+					r, g, b = pix[j, i]
+					a = 255
+
+				mx = maxOut((r, g, b))
+				evC = colors[evaluateColor(mult(mx, 0.8))]
+
+				npix[j, i] = mx
+				nnpix[j, i] = evC
+				nnnpix[j, i] = mult(evC, ((r + g + b) / 3) / 255)
+		im.show()
+		nim.show()
+		nnim.show()
+		nnnim.show()
 	else:
 		outline(img)
 
