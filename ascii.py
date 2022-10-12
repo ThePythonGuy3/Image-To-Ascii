@@ -198,7 +198,7 @@ while 1:
 
 	im = Image.open(direct)
 	w, h = im.size
-	img = im#.resize((w * 2, h), Image.NEAREST)
+	img = im.resize((w * 2, h), Image.NEAREST)
 
 	typ = int(input("Mode: "))
 	multV = float(input("Contrast multiply (0.8-1 recommended): "))
