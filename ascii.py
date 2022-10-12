@@ -7,6 +7,9 @@ colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (255, 255, 0), (0, 0, 255), (255,
 light = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
 multV = 0.8
 
+openColor = lambda color: f"\033[3{color}m"
+closeColor = "\033[0m"
+
 def maxOut(color):
 	o = []
 	if max(color) == 0:
@@ -48,7 +51,13 @@ def full(im):
 	w, h = im.size
 
 	for i in range(h):
+		ptb = tb = -1
 		for j in range(w):
+			if ptb != tb or j == w:
+				ptb = tb
+				if j != 0: o += closeColor
+				if j != w: o += openColor(tb)
+
 			try:
 				r, g, b, a = pix[j, i]
 			except:
@@ -62,7 +71,7 @@ def full(im):
 			else:
 				tb = evaluateColor(mult(col, multV))
 
-			o += f"\033[3{tb}m{getAscii(col)}\033[0m"
+			o += getAscii(col)
 		o += "\n"
 	print(o)
 	pyperclip.copy(o)
@@ -168,7 +177,13 @@ def outline(im):
 	w, h = nim.size
 
 	for i in range(h):
+		ptb = tb = -1
 		for j in range(w):
+			if ptb != tb or j == w:
+				ptb = tb
+				if j != 0: o += closeColor
+				if j != w: o += openColor(tb)
+
 			try:
 				r, g, b, a = pix[j, i]
 			except:
@@ -183,7 +198,7 @@ def outline(im):
 				tb = evaluateColor(mult(col, multV))
 
 			ch, ist = getSurround(im, pix, w, h, tb, j, i)
-			o += f"\033[3{tb}m{ch}\033[0m"
+			o += ch
 		o += "\n"
 	print(o)
 	pyperclip.copy(o)
