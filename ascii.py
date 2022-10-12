@@ -5,6 +5,7 @@ import pyperclip
 
 colors = [(0, 0, 0), (255, 0, 0), (0, 255, 0), (255, 255, 0), (0, 0, 255), (255, 0, 255), (0, 255, 255), (255, 255, 255)]
 light = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+multV = 0.8
 
 def maxOut(color):
 	o = []
@@ -59,7 +60,7 @@ def full(im):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(mult(col, 0.8))
+				tb = evaluateColor(mult(col, multV))
 
 			o += f"\033[3{tb}m{getAscii(col)}\033[0m"
 		o += "\n"
@@ -96,7 +97,7 @@ def getSurround(im, pix, w, h, cl, x, y):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(mult(col, 0.8))
+				tb = evaluateColor(mult(col, multV))
 
 			if cl == tb:
 				v += tv
@@ -150,7 +151,7 @@ def clean(im):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(mult(col, 0.8))
+				tb = evaluateColor(mult(col, multV))
 
 			v, isit = getSurround(im, pix, w, h, tb, j, i)
 
@@ -179,7 +180,7 @@ def outline(im):
 			if ai == 0:
 				tb = 0
 			else:
-				tb = evaluateColor(mult(col, 0.8))
+				tb = evaluateColor(mult(col, multV))
 
 			ch, ist = getSurround(im, pix, w, h, tb, j, i)
 			o += f"\033[3{tb}m{ch}\033[0m"
@@ -200,6 +201,8 @@ while 1:
 	img = im#.resize((w * 2, h), Image.NEAREST)
 
 	typ = int(input("Mode: "))
+	multV = float(input("Contrast multiply (0.8-1 recommended): "))
+
 	if typ == 1:
 		full(img)
 	elif typ == 2:
@@ -223,7 +226,7 @@ while 1:
 					a = 255
 
 				mx = maxOut((r, g, b))
-				evC = colors[evaluateColor(mult(mx, 0.8))]
+				evC = colors[evaluateColor(mult(mx, multV))]
 
 				npix[j, i] = mx
 				nnpix[j, i] = evC
