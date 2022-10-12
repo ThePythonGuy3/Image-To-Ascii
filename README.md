@@ -1,6 +1,8 @@
 # Image-To-Ascii
 Simple tool, prints in console an image as ascii art.
 
+Only tested on Windows, supports ANSI colors.
+
 # Usage
 (Requires python 3.x)
 
