@@ -51,13 +51,8 @@ def full(im):
 	w, h = im.size
 
 	for i in range(h):
-		ptb = tb = -1
+		ptb = -1
 		for j in range(w):
-			if ptb != tb or j == w:
-				ptb = tb
-				if j != 0: o += closeColor
-				if j != w: o += openColor(tb)
-
 			try:
 				r, g, b, a = pix[j, i]
 			except:
@@ -71,7 +66,12 @@ def full(im):
 			else:
 				tb = evaluateColor(mult(col, multV))
 
-			o += getAscii(col)
+			if ptb != tb:
+				ptb = tb
+				if j != 0: o += closeColor
+				if j != w - 1: o += openColor(tb)
+
+			o += getAscii(col) + closeColor*(j == w - 1)
 		o += "\n"
 	print(o)
 	pyperclip.copy(o)
@@ -177,13 +177,8 @@ def outline(im):
 	w, h = nim.size
 
 	for i in range(h):
-		ptb = tb = -1
+		ptb = -1
 		for j in range(w):
-			if ptb != tb or j == w:
-				ptb = tb
-				if j != 0: o += closeColor
-				if j != w: o += openColor(tb)
-
 			try:
 				r, g, b, a = pix[j, i]
 			except:
@@ -197,8 +192,13 @@ def outline(im):
 			else:
 				tb = evaluateColor(mult(col, multV))
 
+			if ptb != tb:
+				ptb = tb
+				if j != 0: o += closeColor
+				if j != w - 1: o += openColor(tb)
+
 			ch, ist = getSurround(im, pix, w, h, tb, j, i)
-			o += ch
+			o += ch + closeColor*(j == w - 1)
 		o += "\n"
 	print(o)
 	pyperclip.copy(o)
@@ -213,7 +213,7 @@ while 1:
 
 	im = Image.open(direct)
 	w, h = im.size
-	img = im#.resize((w * 2, h), Image.NEAREST)
+	img = im.resize((w * 2, h), Image.NEAREST)
 
 	typ = int(input("Mode: "))
 	multV = float(input("Contrast multiply (0.8-1 recommended): "))
@@ -254,4 +254,3 @@ while 1:
 		outline(img)
 
 	print
-
